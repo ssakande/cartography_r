@@ -1,0 +1,368 @@
+---
+title: "Mapping in R Webinar"
+author: "WCA R-EiE WG"
+format: 
+  revealjs:
+    slide-number: c/t
+    width: 1600
+    height: 900
+    logo: "REiE_WG_Logo.png"
+    footer: "[WCA R-EiE Relief web page](https://response.reliefweb.int/west-and-central-africa/education)"
+    css: ["theme/theme.css"]
+    theme: sky
+    echo: true
+---
+
+## **Agenda** {background-color="aquamarine"}
+
+::: {.fragment fragment-index="1"}
+-   Introduction (10 min)
+:::
+
+::: {.fragment fragment-index="2"}
+-   Aperçu sur le logiciel R (15 min)
+:::
+
+::: {.fragment fragment-index="3"}
+-   Aperçu des packages de R pour la cartographie (15 min)
+:::
+
+::: {.fragment fragment-index="4"}
+-   Lecture et manipulation des données spatialisées / géographiques (15 min)
+:::
+
+::: {.fragment fragment-index="5"}
+-   Création de cartes (statiques, interactives)
+:::
+
+::: {.fragment fragment-index="6"}
+-- Cartes statiques avec les packages:ggplot2, tmap, mapsf (45 min)
+:::
+
+::: {.fragment fragment-index="7"}
+-- Cartes interactives avec les packages:Leaflet, tmap, mapview (45 min)
+:::
+
+::: {.fragment fragment-index="8"}
+-   Session de Questions & Réponses (30 min)
+:::
+
+::: {.fragment fragment-index="8"}
+-   Conclusion (5 min)
+:::
+
+## **Introduction**
+
+### **Overview on GIS**
+
+-   **GIS**
+
+Geographic Information Systems (GIS) store, analyze, and visualize data for geographic positions on Earth’s surface. The four major features of GIS are listed below.
+
+-Create geographic data.
+
+-Manage spatial data in a database.
+
+-Analyze and find patterns.
+
+-Map Visualization.
+
+## **Introduction**
+
+### **Overview on GIS**
+
+-   **Well-Known Text (WKT)**
+
+Well-known text (WKT) is a text markup language for representing vector geometry objects. The common type of geometric objects are marked as shown in the table below.
+
+![](images/clipboard-1589788491.png){fig-align="center" width="940"}
+
+## **Introduction**
+
+### **Overview on GIS**
+
+-   **Shapefile**
+
+The shapefile format is a universal geospatial vector data format.The shapefile format can illustrate the vector features: points, lines, and polygons.Each file is briefly introduced as the following:
+
++-----------+----------------------------------------------------------------------------------------------------------------+
+| Files     | Features                                                                                                       |
++===========+================================================================================================================+
+| **.shp**  | shape format; the feature geometry                                                                             |
++-----------+----------------------------------------------------------------------------------------------------------------+
+| **.dbf**  | attribute format; attributes for each shape, stored as two-dimensional table                                   |
++-----------+----------------------------------------------------------------------------------------------------------------+
+| **.prj**  | projection description, using a well-known text representation of coordinate reference systems                 |
++-----------+----------------------------------------------------------------------------------------------------------------+
+| **.shx**  | shape index format; a positional index of the feature geometry to allow seeking forwards and backwards quickly |
++-----------+----------------------------------------------------------------------------------------------------------------+
+
+## **Introduction**
+
+### **Overview on GIS**
+
+-   **Coordinate Reference System (CRS)**
+
+-Geometric data is not geospatial unless it is accompanied by CRS information, which allows GIS to display and operate the data accurately.It includes two major components, datum and projection.
+
+-Datum is a model of the shape of the earth. It has angular units (degrees) and defines the starting point (0,0), and hence th coordinate can represent a specific spot on the earth.
+
+-Projection is a mathematical transformation of the angular measurements on a round earth to a flat surface. The units associated with a given projection are usually linear (feet, meters, etc.).
+
+## **Introduction**
+
+### **Overview on GIS**
+
+-   **Coordinate Reference System (CRS)**
+
++-----------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------+
+| **Type**                          | Features                                                                                                                                                                                                                                                                                                                              | Example                                   |
++===================================+=======================================================================================================================================================================================================================================================================================================================================+===========================================+
+| **Geographic Coordinate Systems** | A global or spherical coordinate system such as latitude–longitude.                                                                                                                                                                                                                                                                   | EPSG:4326\                                |
+|                                   |                                                                                                                                                                                                                                                                                                                                       | (World Geodetic System 1984)              |
++-----------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------+
+| **Projected Coordinate System**   | Based on a map projection such as [transverse Mercator](https://www.wikiwand.com/en/Transverse_Mercator_projection), [Albers equal area](https://www.wikiwand.com/en/Albers_projection), or [Robinson](https://www.wikiwand.com/en/Robinson_projection), which project the spherical surface onto a two-dimensional coordinate plane. | EPSG:3826\                                |
+|                                   |                                                                                                                                                                                                                                                                                                                                       | (TWD97 / TM2 zone 121, Taiwan Datum 1997) |
++-----------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-------------------------------------------+
+
+## **Introduction**
+
+::: {.fragment fragment-index="1"}
+### **The problem for cartographers**
+
+::: columns
+::: {.column width="40%"}
+![](images/clipboard-4216447426.png)
+:::
+
+::: {.column width="60%"}
+Many maps produced in humanitarian context are made with a set of software products that slices the cartographic process.
+:::
+:::
+:::
+
+::: {.fragment fragment-index="2"}
+### **A solution**
+
+::: columns
+::: {.column width="40%"}
+![](images/clipboard-3487045845.png)
+:::
+
+::: {.column width="60%"}
+Simplify the map making process in an unified workflow thanks to R and its spatial ecosystem !
+:::
+:::
+:::
+
+## **Aperçu sur le logiciel R (15 min)**
+
+::: columns
+::: {.column width="20%"}
+![](images/clipboard-505144710.png)
+:::
+
+::: {.column width="80%"}
+R is a popular programming language used for statistical computing and graphical presentation.
+
+R is derived form the [S language](https://en.wikipedia.org/wiki/S_(programming_language)) developed at ATT Bell Laboratories.
+
+R was originally developed for teaching at the University of Auckland, New Zealand, by Ross Ihaka and Robert Gentleman.
+:::
+:::
+
+-It is a great resource for data analysis, data visualization, data science and machine learning
+
+-It provides many statistical techniques
+
+-It is easy to draw graphs in R,
+
+-It works on different platforms
+
+\-[RStudio/Posit]{.fragment .highlight-red} is an integrated development environment (IDE) for R.
+
+-It has many [packages]{.fragment .highlight-red} (libraries of functions)
+
+-It is open-source and free
+
+-It has a large community support
+
+## **Aperçu des packages de R pour la cartographie (15 min)**
+
+### **Spatial operations**
+
+-   before 2003: `spatial`, `sgeostat`, `splancs`, `akima`, `geoR`, `spatstat`, `spdep`, `maptools`.
+
+-   2003: `rgdal` (Roger Bivand, Tim Keitt & Barry Rowlingson), interface between R and GDAL and PROJ4
+
+-   2005: `sp` (Edzer Pebesma & Roger Bivand), classes methods for spatial objects, quickly adopted.
+
+-   2008: `sp` surpport in `ggplot2` (Hadley Wickham)
+
+-   2010: `rgeos` (Roger Bivand & Colin Rundel), interface between R & GEOS.
+
+-   2010: `raster` (Robert J. Hijmans), support for raster data
+
+-   2016: `sf` (Edzer Pebesma), supersedes `sp`, `rgdal` & `rgeos`
+
+-   2018: `stars` (Edzer Pebesma), supersedes `raster`.
+
+-   2020: `terra` (Robert J. Hijmans) also supersedes `raster`.
+
+## **Aperçu des packages de R pour la cartographie (15 min)**
+
+### **Thematic mapping**
+
+-   2014: `tmap` (Martijn Tennekes)
+
+-   2017: `ggplot2` + `ggspatial` (Dewey Dunnington)
+
+-   2021: `mapsf` (T. Giraud) supersedes cartography.
+
+## **Aperçu des packages de R pour la cartographie (15 min)**
+
+### **Interactive mapping**
+
+-   2015: `leaflet` (Joe Cheng et al.), relies on the leaflet javascript library.
+
+-   2015: `mapview` (Tim Appelhans et al.), relies on the leaflet package.
+
+-   2018: `mapdeck` (David Cooley), relies on Mapbox GL & Deck.gl libraries.
+
+## **Lecture et manipulation des données spatialisées / géographiques (15 min)**
+
+**sf, corner stone of the R spatial ecosystem**
+
+::: columns
+::: {.column width="40%"}
+Interface between R and extensively used libraries in GIS:
+
+-   GDAL - Geospatial Data Abstraction Library
+-   PROJ - Coordinate Transformation Software
+-   GEOS - Geometry Engine - Open Source
+:::
+
+::: {.column width="60%"}
+![](images/clipboard-2371339846.png)
+
+*Pebesma and Bivand ([2023](https://r-spatial.org/book/))*
+:::
+:::
+
+## **Lecture et manipulation des données spatialisées / géographiques (15 min)**
+
+::: panel-tabset
+## Sf objects
+
+The sf object does not only contain the geometry information, but sets of features with attributes. The basic component of its geometry data is sfg, which is recorded in WKT format.
+
+A simple feature must contain feature attributes and a simple feature geometries (sfg) object, which defines the location of the tuple. The list-column with the simple feature geometries (sfg) for each tuple is then called simple feature columns (sfc).
+
+![](images/clipboard-492566822.png)
+
+## Sf functions
+
+::: columns
+::: {.column width="20%"}
+```{r}
+#| code-fold: true
+#| code-summary: "expand for full code"
+library(sf)
+ls("package:sf")
+```
+:::
+
+::: {.column width="30%"}
+**Geometric checking**
+
+**st_intersects**: touch or overlap
+
+**st_disjoint**: !intersects
+
+**st_touches**: touch
+
+**st_crosses**: cross (do not touch)
+
+**st_within**: within
+
+**st_contains**: contains
+:::
+
+::: {.column width="50%"}
+**Geometric operations**
+
+**st_read**/**st_write**: reads a sf object / writes a sf object,
+
+**st_buffer**: compute a buffer around this geometry/each geometry
+
+**st_transform**: transforms data to a new CRS,
+
+**st_intersection**: intersects sf objects,
+
+**st_union**: combines several sf objects into one,
+
+**st_as_sf**: converts to a sf object.
+:::
+:::
+
+## Import
+
+## Buffer
+
+## Intersection
+
+## Union
+
+## Conversion
+
+waterfalls_sf = st_as_sf(waterfalls, coords = c("lon", "lat"), crs = 4326)
+
+The st_transform() function is used to convert the existing spatial object’s coordinates into another projection. For example, let’s transform our waterfalls_sf object to the Equal Earth projection (EPSG 8857).
+
+waterfalls_sf_trans = st_transform(waterfalls_sf, 8857)
+
+:::
+
+## **Création de cartes (statiques, interactives)**
+
+-   **Chargement des packages**
+
+```{r echo=TRUE,output=FALSE}
+#| code-line-numbers: "1|2|3|4|5"
+library(pacman)
+pacman::p_load(
+  readxl,         # import/export excel files
+  tidyverse,      # includes ggplot2 and other
+  rio,            # import/export
+  here,           # file locator
+  stringr,        # working with characters   
+  scales,         # transform numbers
+  ggrepel,        # smartly-placed labels
+  gghighlight,    # highlight one part of plot
+  RColorBrewer,   # color scales
+  sf,             # simple features for...
+  tmap,           # thematic map for
+  mapsf,          #map.........
+  leaflet,        #leaflet for inter
+  mapview         #mapview......
+)
+
+#pdi <- read_excel()
+#ner_shp <- read_sf()
+#ner_shp_pdi <-ner_shp %>% left_join(pdi,by=c("AdMIN2_pcode"="Iso3"))
+
+```
+
+## **Création de cartes (statiques, interactives)**
+
+### **Cartes statiques avec les packages:ggplot2, tmap, mapsf (45 min)**
+
+-   **Carte avec ggplot2**
+-   **Carte avec tmap**
+-   **Carte avec mapsf**
+
+### **Cartes interactives avec les packages:Leaflet, tmap, mapview (45 min)**
+
+## **Session de Questions & Réponses (30 min)**
+
+## **Conclusion (5 min)**
