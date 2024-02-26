@@ -305,27 +305,7 @@ ls("package:sf")
 :::
 :::
 
-## Import
-
-## Buffer
-
-## Intersection
-
-## Union
-
-## Conversion
-
-waterfalls_sf = st_as_sf(waterfalls, coords = c("lon", "lat"), crs = 4326)
-
-The st_transform() function is used to convert the existing spatial object’s coordinates into another projection. For example, let’s transform our waterfalls_sf object to the Equal Earth projection (EPSG 8857).
-
-waterfalls_sf_trans = st_transform(waterfalls_sf, 8857)
-
-:::
-
-## **Création de cartes (statiques, interactives)**
-
--   **Chargement des packages**
+## Load packages
 
 ```{r echo=TRUE,output=FALSE}
 #| code-line-numbers: "1|2|3|4|5"
@@ -344,14 +324,144 @@ pacman::p_load(
   tmap,           # thematic map for
   mapsf,          #map.........
   leaflet,        #leaflet for inter
-  mapview         #mapview......
-)
+  mapview,        #mapview......
+  janitor         # clean variables names
+  )
 
 #pdi <- read_excel()
 #ner_shp <- read_sf()
 #ner_shp_pdi <-ner_shp %>% left_join(pdi,by=c("AdMIN2_pcode"="Iso3"))
 
 ```
+
+## Import/export
+
+```{r}
+ner_shp_adm2<-st_read(here("data","ner_adm_ignn_20230720_ab_shp","NER_admbnda_adm2_IGNN_20230720.shp"))
+# ner_shp_adm2<-read_sf()
+# ner_gjson_adm1<-st_write(ner_shp_adm1,"./data/NER_admin1.geojson")
+# ner_gjson_adm2<-write_sf()
+hno <- read_excel(here("data","ner_hno_pin_data_2024.xlsx"))  %>% clean_names() %>% select(id:population_totale,cluster,pin) %>%  filter(cluster=="Education") %>% mutate(admin_2_p_code=str_remove(admin_2_p_code,"R"))
+ner_shp_adm2_hno <-left_join(ner_shp_adm2,hno,by=c("ADM2_PCODE"="admin_2_p_code"))
+```
+
+
+## Plot
+
+::: columns
+::: {.column width="40%"}
+```{r}
+plot(ner_shp_adm2)
+```
+:::
+
+::: {.column width="30%"}
+```{r}
+plot(ner_shp_adm2$geometry)
+```
+:::
+
+::: {.column width="30%"}
+```{r}
+plot(st_geometry(ner_shp_adm2))
+```
+:::
+:::
+
+
+## Union
+
+::: columns
+::: {.column width="50%"}
+```{r}
+ner_shp_adm0_u<-st_union(ner_shp_adm2)
+plot(st_geometry(ner_shp_adm0_u),border="blue",lwd=2)
+```
+:::
+
+::: {.column width="50%"}
+```{r}
+ner_shp_adm1<-ner_shp_adm2 %>% group_by(ADM1_FR) %>% count()
+plot(st_geometry(ner_shp_adm1),border="orange",lwd=2)
+```
+:::
+:::
+
+## Buffer
+
+```{r}
+#| code-fold: true
+#| code-summary: "expand for full code"
+ner_shp_adm2_u<-st_union(ner_shp_adm2)
+ner_shp_adm2_100km<-st_buffer(ner_shp_adm2_u,100000)
+
+#Plot
+plot(st_geometry(ner_shp_adm2_100km),border="red",col="grey")
+plot(st_geometry(ner_shp_adm2),add=T,col="lightblue")
+plot(st_geometry(ner_shp_adm2_u),border="blue",add=T,lwd=2)
+```
+
+## Intersection
+
+::: columns
+::: {.column width="40%"}
+```{r}
+#| code-fold: true
+#| code-summary: "expand for full code"
+plot(st_geometry(ner_shp_adm2))
+```
+:::
+
+::: {.column width="30%"}
+```{r}
+#| code-fold: true
+#| code-summary: "expand for full code"
+ner_shp_adm1_aga<-ner_shp_adm1 %>% filter(ADM1_FR=="Agadez")
+plot(st_geometry(ner_shp_adm1_aga),border="red")
+```
+:::
+
+::: {.column width="30%"}
+```{r}
+#| code-fold: true
+#| code-summary: "expand for full code"
+ner_shp_adm2_aga<-st_intersection(ner_shp_adm2,ner_shp_adm1_aga)
+plot(st_geometry(ner_shp_adm1_aga),border="red")
+plot(st_geometry(ner_shp_adm2_aga),add=T,col="orange",border="blue")
+```
+:::
+:::
+
+## Conversion
+
+::: columns
+::: {.column width="50%"}
+```{r}
+hno_sf= st_as_sf(hno, coords = c("admin_2_long", "admin_2_lat"), crs = 4326)
+plot(st_geometry(hno_sf),col="red",pch = 3)
+```
+:::
+
+::: {.column width="50%"}
+The st_transform() function is used to convert the existing spatial object’s coordinates into another projection. For example, let’s transform our hno_sf object to the Equal Earth projection (EPSG 8857).
+
+`hno_sf_trans = st_transform(hno_sf, 8857)`
+:::
+:::
+
+## Centroids
+```{r}
+ner_shp_adm2_ctd<-st_centroid(ner_shp_adm2)
+plot(st_geometry(ner_shp_adm2), col = sf.colors(12, categorical = TRUE))
+plot(st_geometry(ner_shp_adm2_ctd),col="red",pch = 19,add=T)
+```
+
+:::
+
+## **Création de cartes (statiques, interactives)**
+
+-   **Chargement des packages**
+
 
 ## **Création de cartes (statiques, interactives)**
 
